@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'ru.clevertec'
+version = '0.0.1'
+
+java {
+    sourceCompatibility = '8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    implementation 'org.glassfish:javax.json:1.0.4'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+    implementation 'commons-configuration:commons-configuration:1.7'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Jar-Name': project.name,
+                   'Jar-Version': project.version)
+    }
+}
+
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            name = 'myRepo'
+            url = layout.buildDirectory.dir("repo")
+        }
+    }
+}
+
+build {
+    dependsOn {
+        tasks.named("publishToMavenLocal")
+    }
+}
+
